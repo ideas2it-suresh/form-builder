@@ -1,0 +1,206 @@
+@import 'layout/_leftSideBar.scss';
+
+body {
+    background-color: $background-color;
+    color: $font-color;
+    font-family: $font-family;
+    margin: 0;
+}
+
+.form-container {
+    display: table;
+    font-size: 14px;
+    height: 100%;
+    position: fixed;
+    width: 100%;
+}
+
+.form-content {
+    display: table-cell;
+    text-align: left;
+    width :90%;
+
+    form {
+        margin: 0 auto;
+        position: relative;
+        width: 60%;
+    }
+
+    i {
+	padding-right: 5px;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    label {
+        padding-right: 10px;
+        vertical-align: top;
+    }
+
+    input,
+    textarea,
+    select {
+        margin-right: 10px;
+    }
+
+    .align-div-10 {
+        float: left;
+        width: 10%;
+    }
+
+    .align-div-25 {
+        float: left;
+        width: 25%;
+    }
+
+    .align-div-65 {
+        float: left;
+        width: 65%;
+    }
+
+    .main-div-align {
+        display: inline-block;
+        padding: 10px;
+        position: relative;
+        width: 100%;
+    }
+
+    .margin-top-5 {
+        margin-top: 5px;
+    }
+}
+
+.def-button {
+    background-color: $form-build-primary-color;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    color: $form-build-font-color;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 6px 6px;
+    margin-top: 1%;
+}
+
+.convert-button {
+    @extend .def-button;
+    margin-left: 38%;
+}
+
+.change-button {
+    @extend .def-button;
+    margin-left: 50%;
+}
+
+.form-input {
+    display: block;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: $form-build-font-inp-color;
+    background-color: $form-build-secondary-color;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+.input-text {
+    @extend .form-input;
+    height: 25px;
+    width: 80%;
+}
+
+.input-text-modal {
+    @extend .form-input;
+    height: 25px;
+    width: 50%;
+}
+
+.input-select {
+    @extend .form-input;
+    height: 30px;
+    width: 80%;
+}
+
+.input-textarea {
+    @extend .form-input;
+    height: 50px;
+    width: 80%;
+}
+
+/* Modal Content */
+.modal-content {
+    animation-name: slideIn;
+    animation-duration: 0.4s;
+    background-color: $modal-bg-color;
+    display: none;
+    position: absolute;
+    margin-left: 400px;
+    overflow: auto;
+    top: 10%;
+    width: 40%;
+    z-index: 1;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.4s;
+}
+
+/* The Close Button */
+.dismiss {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    &:hover,&:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+}
+
+.modal-header {
+    background-color: $form-build-primary-color;
+    color: $form-build-font-color;
+    padding: 2px 16px;
+    text-align: center;
+}
+
+.modal-body {
+    padding: 15px 15px;
+
+    .mod-main-div {
+        padding-bottom: 5px;
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .mod-div-15 {
+        float: left;
+        width: 15%;
+    }
+
+    .mod-div-85 {
+        float: left;
+        width: 85%;
+    }
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}

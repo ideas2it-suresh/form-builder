@@ -1,0 +1,28 @@
+@import 'helpers/_variables.scss';
+
+.form-left-side-bar {
+    align-content: center;
+    align-items: center;
+    background-color: $form-build-primary-color;
+    display: table-cell;
+    font-size: 14px;
+    margin:0;
+    width :10%;
+    ul {
+        margin-top: 50px;
+        padding: 0;
+    }
+    li {
+        border-bottom: 1px solid $li-border-bottom-color;
+        color: $form-build-font-color;
+        cursor: pointer;
+        list-style: none;
+        padding: 15px 15px;
+        position: relative;
+        i {
+            position: absolute;
+            right: 25px;
+            top: 17px;
+        }
+    }
+}
