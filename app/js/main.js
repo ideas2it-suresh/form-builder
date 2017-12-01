@@ -1,544 +1,416 @@
-    try {
-        var body = document.body;
-        var parentDiv = document.createElement("div");
-        var firstChildDiv = document.createElement("div");
-        var secondChildDiv = document.createElement("div");
+var bodyDom = document.body;
 
-        parentDiv.className = 'form-container';
-        firstChildDiv.className = 'form-left-side-bar';
-        secondChildDiv.className = 'form-content';
+function createAppHeader() {
+  var headerDom = createNewElement('header', '', bodyDom);
+  var headerContainerDom = createNewElement('div', {class : 'head-container'}, headerDom);
+  var headerLogoDom = createNewElement('div', {class : 'head-logo'}, headerContainerDom);
+  var headerContentDom = createNewElement('div', {class : 'head-content'}, headerContainerDom);
+  createNewElement('h1', {textNode: 'Dynamic Form Builder'}, headerContentDom);
+  var logoHrefDom = createNewElement('a', {href : '#'}, headerLogoDom);
+  createNewElement('img', {src : '/images/idea-logo.png'}, logoHrefDom);
+}
+createAppHeader();  // setting up header
 
-        var leftSideBarUl = document.createElement('ul');
-        var aLiText = ["Text", "Text Area", "Select", "Checkbox", "Radio"];
-        var aLiId = ["textLi", "textAreaLi", "selectLi", "checkboxLi", "radioLi"];
+function createBodyContent() {
+  var mainContainerDom = createNewElement('div', {class: 'form-container'}, bodyDom);
+  var leftSideBarDom = createNewElement('div', {class: 'form-left-side-bar'}, mainContainerDom);
+  var mainContentDom = createNewElement('div', {class: 'form-content'}, mainContainerDom);
 
-        for (var i = 0; i < aLiId.length; i++) {
-            var newLeftSideBarLi = document.createElement('li');
-            newLeftSideBarLi.setAttribute("id", aLiId[i]);
-            var newLeftSideBarLiText = document.createTextNode(aLiText[i]);
-            var iPlus = document.createElement("i");
-            iPlus.setAttribute('class', 'fa fa-plus');
-            newLeftSideBarLi.appendChild(newLeftSideBarLiText);
-            newLeftSideBarLi.appendChild(iPlus);
-            leftSideBarUl.appendChild(newLeftSideBarLi);
-        }
+  var ulDom = createNewElement('ul', '', leftSideBarDom);
+  var oItemList = [
+    { 'liName': 'Form Elements', 'liId': 'EleLi' },
+    { 'liName': 'Text', 'liId': 'textLi' },
+    { 'liName': 'Text Area', 'liId': 'textAreaLi' },
+    { 'liName': 'Select', 'liId': 'selectLi' },
+    { 'liName': 'Checkbox', 'liId': 'checkboxLi' },
+    { 'liName': 'Radio', 'liId': 'radioLi' }
+  ];
+  for (var i = 0; i < oItemList.length; i++) {
+    var listRow = oItemList[i];
+    var liDom;
+    if (listRow.liId === 'EleLi') {
+      liDom = createNewElement('li', {class: 'li-head', id : listRow.liId, textNode: listRow.liName}, ulDom);
+    } else {
+      liDom = createNewElement('li', {id : listRow.liId, textNode: listRow.liName}, ulDom);
+      createNewElement('i', {class : 'fa fa-plus', title: 'Add a Row'}, liDom);
+    }
+  }
+  createForm(mainContentDom); // setting up footer
+  createNav(mainContentDom); // setting up footer
+  createAppFooter(mainContentDom); // setting up footer
+  createModal(mainContentDom); // setting up modal
+}
+createBodyContent();
 
-        firstChildDiv.appendChild(leftSideBarUl);
-        parentDiv.appendChild(firstChildDiv);
-        parentDiv.appendChild(secondChildDiv);
-        body.appendChild(parentDiv);
+function createForm(mainContentDom) {
+  var formDom = createNewElement('form', {id : 'formBuilder', name: 'formBuilder', onsubmit: 'event.preventDefault();'}, mainContentDom);
+  var formHeadDivDom = createNewElement('div', {class: 'form-head-div'}, formDom);
+  var formHeadFieldSetDom = createNewElement('fieldset', {class: 'form-head-fieldset'}, formHeadDivDom);
+  createNewElement('legend', {textNode: 'Form Details'}, formHeadFieldSetDom);
+  createNewElement('input', {type: 'text', class: 'form-head-input', placeholder: 'Form Name'}, formHeadFieldSetDom);
+  createNewElement('textarea', {class: 'form-head-textarea', placeholder: 'Form Description'}, formHeadFieldSetDom);
+  createNewElement('button', {id: 'submitForm', class: 'submit-button', textNode: 'Submit', title: 'Submit Form'}, formDom);
+  elementShowHide(0, 0);  // hide convert button once created
+}
 
-        var formEle = document.createElement("form");
-        formEle.id = 'newFormBuilder';
-        secondChildDiv.appendChild(formEle);
+function createNav() {
+  var formDom = getElementById('formBuilder');
+  var convertToJsonNavDom = createNewElement('nav', {class: 'float-convert-btn'}, formDom);
+  var convertBtnDom = createNewElement('button', {id: 'convertToJson', class: 'convert-button', textNode: 'Convert to JSON', onclick: 'convertHtmlToJson();', title: 'Download Form as JSON'}, convertToJsonNavDom);
+  createNewElement('i', {class: 'fa fa-download'}, convertBtnDom);
+}
+function createAppFooter(mainContentDom) {
+  var footerDom = createNewElement('footer', '', mainContentDom);
+  var footerContentDom = createNewElement('div', {textNode: 'Copyright 2017, Ideas2IT Technologies Private Limited'}, footerDom);
+  var iCopyrightDom = createNewElement('i', {class: 'fa fa-copyright'});
+  footerContentDom.insertBefore(iCopyrightDom, footerContentDom.firstChild);
+}
 
-        var convertBtn = document.createElement('button');
-        convertBtn.appendChild(document.createTextNode('Convert to JSON'));
-        var iDownload = document.createElement('i');
-        iDownload.setAttribute('class', 'fa fa-download');
-        convertBtn.appendChild(iDownload);
-        convertBtn.setAttribute('id', 'jsonConvert');
-        convertBtn.setAttribute('class', 'convert-button');
-        convertBtn.setAttribute('onclick', 'convertHtmlToJson();');
-        secondChildDiv.appendChild(convertBtn);
-        toggleConvertButton(0);
+function createModal(mainContentDom) {
+  var modalMainDom = createNewElement('div', {class: 'modal'}, mainContentDom);     // setting up modal
+  var modalContentDom = createNewElement('div', {class: 'modal-content'}, modalMainDom);
+  var modalHeaderDom = createNewElement('div', {class: 'modal-header'}, modalContentDom);
+  var modalHeaderSpanDom = createNewElement('span', {class: 'dismiss'}, modalHeaderDom);
+  createNewElement('i', {class: 'fa fa-times', title: 'Close Modal'}, modalHeaderSpanDom);
+  createNewElement('h2', {textNode: 'Input Parameters'}, modalHeaderDom);
+  createNewElement('div', {class: 'modal-body'} , modalContentDom);
+}
 
-        // create modal
-        var modalContentDiv = document.createElement('div');
-        modalContentDiv.className = 'modal-content';
+var modal = querySelector('.modal');
+var modalSpan = querySelector('.dismiss');
 
-        var modalHeaderDiv = document.createElement('div');
-        modalHeaderDiv.className = 'modal-header';
-        var modHeadSpan = document.createElement('span');
-        modHeadSpan.className = 'dismiss';
-        modHeadSpan.innerHTML = '&times;';
-        var modFootH3 = document.createElement('h2');
-        modFootH3.appendChild(document.createTextNode('Input Parameters'));
-        modalHeaderDiv.appendChild(modHeadSpan);
-        modalHeaderDiv.appendChild(modFootH3);
-        modalContentDiv.appendChild(modalHeaderDiv);
+// once clicked the close icon hide the modal
+modalSpan.onclick = function() {
+  modal.style.display = 'none';
+};
 
-        var modalBodyDiv = document.createElement('div');
-        modalBodyDiv.className = 'modal-body';
-        modalContentDiv.appendChild(modalBodyDiv);
+// by clicking outside the modal close it
+window.onclick = function(event) {
+  if (event.target.className === 'form-content' || event.target.className === 'form-left-side-bar') {
+    modal.style.display = 'none';
+  }
+};
 
-        secondChildDiv.appendChild(modalContentDiv);
+function createNewElement(eleName, oAttribute, parentEle) {
+  var ele = document.createElement(eleName);
+  if (oAttribute) {
+    for (var attr in oAttribute) {
+      var attrValue = oAttribute[attr];
+      if (attr === 'textNode') {
+        ele.appendChild(document.createTextNode(attrValue));
+      } else {
+        ele.setAttribute(attr, attrValue);
+      }
+    }
+  }
+  if (parentEle) {
+    parentEle.appendChild(ele);
+  }
+  return ele;
+}
 
-        var modal = document.querySelector('.modal-content');
-        var rightSideContent = document.querySelector('.form-content');
-        var span = document.querySelector('.dismiss');
-    } catch (e) {
-        console.log(e);
+var formElementCount = 0;
+function generateInput(labelName, element, eleClass, eleType) {
+  formElementCount++;
+  var oAttribute = {};
+  if (eleClass) {
+    oAttribute.class = eleClass;
+  }
+  if (eleType) {
+    oAttribute.type = eleType;
+  }
+
+  var mainDivDom = createNewElement('div', {class: 'main-div-align', onmouseover: 'mouseAction(1, '+formElementCount+');', onmouseout: 'mouseAction(0, '+formElementCount+');'});
+
+  var labelDivDom = createNewElement('div', {class: 'align-div-20 margin-top-5'}, mainDivDom);
+  createNewElement('label', {textNode: labelName}, labelDivDom);
+
+  var inputDivDom = createNewElement('div', {class: 'align-div-70'}, mainDivDom);
+
+  if (labelName === 'Radio') {
+    var yesLabelDom = createNewElement('label', {textNode: 'Yes'}, inputDivDom);
+    createNewElement(element, {name: 'radio', type: eleType, value: 'yes'}, yesLabelDom);
+    var noLabelDom = createNewElement('label', {textNode: 'No'}, inputDivDom);
+    createNewElement(element, {name: 'radio', type: eleType, value: 'no'}, noLabelDom);
+  } else {
+    var inputDom = createNewElement(element, oAttribute, inputDivDom);
+    if (element === 'select') {
+      var aDefOption = ['Test', 'Test 2', 'Test 3'];
+      addSelectOption(inputDom, aDefOption);
+    }
+  }
+
+  var iconDivDom = createNewElement('div', {id : 'icon-div-'+formElementCount, class: 'align-div-10 margin-top-5'}, mainDivDom);
+  createNewElement('i', {class: 'fa fa-pencil-square-o', onclick: 'editRow(event);', title: 'Edit Row'}, iconDivDom);
+  createNewElement('i', {class: 'fa fa-trash-o', onclick: 'delRow(event);', title: 'Delete Row'}, iconDivDom);
+
+  var formDom = getElementById('formBuilder');
+  var submitBtnDom = getElementById('submitForm');
+  formDom.insertBefore(mainDivDom, submitBtnDom);
+  elementShowHide(1, 0);
+  elementShowHide(0, formElementCount);
+}
+
+function getElementById(id) {
+  return document.getElementById(id);
+}
+
+function createTextNode(text, element) {
+  element.appendChild(document.createTextNode(text));
+}
+
+function querySelector(selector) {
+  return document.querySelector(selector);
+}
+
+getElementById('textLi').onclick = function() {
+  generateInput('Name', 'input', 'input-text', 'text');
+};
+
+getElementById('textAreaLi').onclick = function() {
+  generateInput('Textarea', 'textarea', 'input-textarea');
+};
+
+getElementById('selectLi').onclick = function() {
+  generateInput('Select', 'select', 'input-select');
+};
+
+getElementById('checkboxLi').onclick = function() {
+  generateInput('Checkbox', 'input', '', 'checkbox');
+};
+
+getElementById('radioLi').onclick = function() {
+  generateInput('Radio', 'input', '', 'radio');
+};
+
+function addSelectOption(selectDom, aOption) {
+  while (selectDom.hasChildNodes()) {
+    selectDom.removeChild(selectDom.lastChild);
+  }
+  for (var i = 0; i < aOption.length; i++) {
+    var selectVal = aOption[i];
+    var selectOption = createNewElement('option',{value: selectVal}, selectDom);
+    selectOption.text = selectVal;
+  }
+}
+
+function editRow(evt) {
+  var modalBodyDom = querySelector('.modal-body');
+  // to remove all previous node form modal body
+  while (modalBodyDom.hasChildNodes()) {
+    modalBodyDom.removeChild(modalBodyDom.lastChild);
+  }
+
+  // get event origin to set id, To edit that row parameters
+  var eventOriginDom = evt.target;
+  eventOriginDom.setAttribute('id', 'clickedIcon');
+
+  // to get which input type in that row
+  var rowType = eventOriginDom.parentNode.previousSibling.firstChild.type;
+
+  var aModalInputParameter = [];
+  // set radio button parameters to edit
+  if (typeof rowType === 'undefined') {
+    aModalInputParameter = [
+      {labelText: 'Label', inputId: 'lbl'},
+      {labelText: 'ID 1', inputId: 'id1'},
+      {labelText: 'Class 1', inputId: 'cls1'},
+      {labelText: 'Option 1', inputId: 'opt1'},
+      {labelText: 'Name 1', inputId: 'nam1'},
+      {labelText: 'ID 2', inputId: 'id2'},
+      {labelText: 'Class 2', inputId: 'cls2'},
+      {labelText: 'Option 2', inputId: 'opt2'},
+      {labelText: 'Name 2', inputId: 'nam2'}
+    ];
+  } else {
+    // set other input parametere to edit
+    aModalInputParameter = [
+      {labelText: 'Label', inputId: 'lbl'},
+      {labelText: 'Class', inputId: 'cls'},
+      {labelText: 'ID', inputId: 'id'},
+      {labelText: 'Name', inputId: 'nam'}
+    ];
+
+    if (rowType === 'text' || rowType === 'textarea') {
+      var placeHoldParam = {labelText: 'Placeholder', inputId: 'plceHl'};
+      aModalInputParameter.push(placeHoldParam);
     }
 
-    document.querySelector('#textLi').onclick = function() {
-        try {
-            mainDivEle = createNewDiv('inp', 'Name', 1);
-            var newLabelDiv = createNewDiv('inp', 'Name', 0);
-            newLabelDiv.setAttribute('class', 'align-div-10 margin-top-5');
-            var newLabel = document.createElement("label");
-            var newLabelText = document.createTextNode('Name');
-            newLabel.appendChild(newLabelText);
-            newLabelDiv.appendChild(newLabel);
+    if (rowType === 'select-one') {
+      var selOptionParam = {labelText: 'Options', inputId: 'opt'};
+      aModalInputParameter.push(selOptionParam);
+    }
+  }
+  // setting up that input parameters in modal body
+  for (var i = 0; i < aModalInputParameter.length; i++) {
+    var inputParamRow = aModalInputParameter[i];
+    var modalMainDiv = createNewElement('div', {class: 'mod-main-div'}, modalBodyDom);
+    var modalLabelDiv = createNewElement('div', {class: 'mod-div-15'}, modalMainDiv);
+    createNewElement('label', {textNode : inputParamRow.labelText}, modalLabelDiv);
 
-            var newInputDiv = createNewDiv('inp', 'Name', 0);
-            newInputDiv.setAttribute('class', 'align-div-25');
-            var inpEle = document.createElement("input");
-            inpEle.setAttribute('class', 'input-text');
-            inpEle.type = "text";
-            newInputDiv.appendChild(inpEle);
+    var modalInputDiv = createNewElement('div', {class: 'mod-div-85'}, modalMainDiv);
+    createNewElement('input', {class: 'input-text-modal',id: inputParamRow.inputId, type: 'text'}, modalInputDiv);
+  }
+  createNewElement('button', {class: 'change-button', textNode: 'Save', onclick: 'changeParameters();'}, modalBodyDom);
+  modal.style.display = 'block';
+}
 
-            var newLablDiv = createNewDiv('inp', 'Name', 0);
-            newLablDiv.setAttribute('class', 'align-div-65 margin-top-5');
-            generateEditAndRemoveIcon(newLablDiv);
+function changeParameters() {
+  var iOriginDom = getElementById('clickedIcon');  // get the icon clicked to edit that row
+  iOriginDom.removeAttribute('id');  // unset the id after getting the clicked icon dom
+  var destination = iOriginDom.parentNode.previousSibling;  // get the input element node
+  var destLength = destination.childNodes.length;
+  var row = '';
+  var lablRow = '';
 
-            mainDivEle.appendChild(newLabelDiv);
-            mainDivEle.appendChild(newInputDiv);
-            mainDivEle.appendChild(newLablDiv);
-
-            formEle.appendChild(mainDivEle);
-            toggleConvertButton(1);
-        } catch (e) {
-            console.log(e);
+  if (destLength === 1) {  // updating other then radio by given modal input ID
+    var aModalInputId = ['lbl', 'cls', 'id', 'nam'];
+    row = destination.childNodes[0];
+    lablRow = iOriginDom.parentNode.previousSibling.previousSibling.childNodes[0];
+    if (row.type == 'text' || row.type == 'textarea') {
+      aModalInputId.push('plceHl');
+    } else if (row.type == 'select-one') {
+      aModalInputId.push('opt');
+    }
+    for (var j = 0; j < aModalInputId.length; j++) {
+      var newVal = getElementById(aModalInputId[j]);
+      var newInputVal = newVal.value;
+      if (newInputVal) {
+        switch (aModalInputId[j]) {
+          case 'lbl':
+            while (lablRow.hasChildNodes()) {
+              lablRow.removeChild(lablRow.lastChild);
+            }
+            createTextNode(newInputVal, lablRow);
+            break;
+          case 'nam':
+            row.name = newInputVal;
+            break;
+          case 'cls':
+            row.className = row.className+' '+newInputVal;
+            break;
+          case 'id':
+            row.id = newInputVal;
+            break;
+          case 'plceHl':
+            row.placeholder = newInputVal;
+            break;
+          case 'opt':
+            var aOption = newInputVal.split(',');
+            addSelectOption(row, aOption);
+            break;
+          default:
+            break;
         }
+      }
+    }
+  } else if (destLength === 2) {  // updating other radio by given modal input ID
+    var aModalRadioInputId = ['lbl', 'id1', 'id2', 'cls1', 'cls2', 'opt1', 'opt2', 'nam1', 'nam2'];
+    var radioInput1 = destination.childNodes[0].childNodes[1];
+    var radioInput2 = destination.childNodes[1].childNodes[1];
+    var radioLabel1 = destination.childNodes[0].childNodes[0];
+    var radioLabel2 = destination.childNodes[1].childNodes[0];
+    lablRow = iOriginDom.parentNode.previousSibling.previousSibling.childNodes[0];
+    for (var k = 0; k < aModalRadioInputId.length; k++) {
+      var newRadVal = getElementById(aModalRadioInputId[k]);
+      var newRadioInputValue = newRadVal.value;
+      if (newRadioInputValue) {
+        switch (aModalRadioInputId[k]) {
+          case 'lbl':
+            while (lablRow.hasChildNodes()) {
+                lablRow.removeChild(lablRow.lastChild);
+            }
+            createTextNode(newRadioInputValue, lablRow);
+            break;
+          case 'nam1':
+            radioInput1.name = newRadioInputValue;
+            break;
+          case 'nam2':
+            radioInput2.name = newRadioInputValue;
+            break;
+          case 'cls1':
+            radioInput1.className = radioInput1.className+' '+newRadioInputValue;
+            break;
+          case 'cls2':
+            radioInput2.className = radioInput2.className+' '+newRadioInputValue;
+            break;
+          case 'id1':
+            radioInput1.id = newRadioInputValue;
+            break;
+          case 'id2':
+            radioInput2.id = newRadioInputValue;
+            break;
+          case 'opt1':
+            radioLabel1.nodeValue = radioInput1.value = newRadioInputValue;
+            break;
+          case 'opt2':
+            radioLabel2.nodeValue = radioInput2.value = newRadioInputValue;
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+  modal.style.display = 'none';
+}
+
+function delRow(evt) {
+  evt.target.parentNode.parentNode.remove();
+  var myForm = getElementById('formBuilder');
+  if (myForm.childNodes.length === 3) {
+    elementShowHide(0, 0);
+  }
+}
+
+function convertHtmlToJson() {
+  var myForm = getElementById('formBuilder');
+  var aResult = [];
+  for (var i = 0; i < myForm.length; i++) {
+    var formRow = myForm[i];
+    if (formRow.id === 'convertToJson' || formRow.className === 'form-head-fieldset') {
+      continue;
+    }
+    if (formRow.className === 'form-head-input') {
+      aResult.push({'name': formRow.value});
+      continue;
+    }
+    if (formRow.className === 'form-head-textarea') {
+      aResult.push({'desc': formRow.value});
+      continue;
+    }
+    var labelVal;
+    if (formRow.className !== 'submit-button') {
+      if (formRow.type === 'radio') {
+        labelVal = formRow.parentNode.parentNode.previousSibling.childNodes[0].innerText;
+      } else {
+        labelVal = formRow.parentNode.previousSibling.childNodes[0].innerText;
+      }
+    }
+    var result = {
+      'label': labelVal,
+      'id': formRow.id,
+      'class': formRow.className,
+      'name': formRow.name,
+      'placeholder': formRow.placeholder,
+      'type': formRow.type,
+      'value': formRow.value
     };
+    aResult.push(result);
+  }
+  var jsonData = JSON.stringify(aResult, null, 4);
+  // download converted json as a file
+  var downloadJsonDom = createNewElement('a', {download: 'form-builder.json', href: 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonData)}, bodyDom);
+  downloadJsonDom.style.display = 'none';
+  downloadJsonDom.click();
+  bodyDom.removeChild(downloadJsonDom);
+}
 
-    document.querySelector('#textAreaLi').onclick = function() {
-        try {
-            mainDivEle = createNewDiv('txtAr', 'Textarea', 1);
+function elementShowHide(condition, formElementCount) {
+  var id = formElementCount ? 'icon-div-'+formElementCount : 'submitForm';
+  getElementById(id).style.display = condition ? 'inline-block' : 'none';
+}
 
-            var newLabelDiv = createNewDiv('txtAr', 'Textarea', 0);
-            newLabelDiv.setAttribute('class', 'align-div-10 margin-top-5');
-            var newLabel = document.createElement("label");
-            var newLabelText = document.createTextNode('Text Area');
-            newLabel.appendChild(newLabelText);
-            newLabelDiv.appendChild(newLabel);
-
-            var newInputDiv = createNewDiv('txtAr', 'Textarea', 0);
-            newInputDiv.setAttribute('class', 'align-div-25');
-            var inpEle = document.createElement("textarea");
-            inpEle.setAttribute('class', 'input-textarea');
-            newInputDiv.appendChild(inpEle);
-
-            var newLablDiv = createNewDiv('txtAr', 'Textarea', 0);
-            newLablDiv.setAttribute('class', 'align-div-65 margin-top-5');
-            generateEditAndRemoveIcon(newLablDiv);
-
-            mainDivEle.appendChild(newLabelDiv);
-            mainDivEle.appendChild(newInputDiv);
-            mainDivEle.appendChild(newLablDiv);
-
-            formEle.appendChild(mainDivEle);
-            toggleConvertButton(1);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    document.querySelector('#selectLi').onclick = function() {
-        try {
-            var aDefOption = ['Test', 'Test 2', 'Test 3'];
-
-            mainDivEle = createNewDiv('sel', 'Select', 1);
-
-            var newLabelDiv = createNewDiv('sel', 'Select', 0);
-            newLabelDiv.setAttribute('class', 'align-div-10 margin-top-5');
-            var newLabel = document.createElement("label");
-            var newLabelText = document.createTextNode('Select');
-            newLabel.appendChild(newLabelText);
-            newLabelDiv.appendChild(newLabel);
-
-            var newInputDiv = createNewDiv('sel', 'Select', 0);
-            newInputDiv.setAttribute('class', 'align-div-25');
-            var selEle = document.createElement("select");
-            selEle.setAttribute('class', 'input-select');
-            newInputDiv.appendChild(selEle);
-            addSelectOption(selEle, aDefOption);
-
-            var newLablDiv = createNewDiv('sel', 'Select', 0);
-            newLablDiv.setAttribute('class', 'align-div-65 margin-top-5');
-            generateEditAndRemoveIcon(newLablDiv);
-
-            mainDivEle.appendChild(newLabelDiv);
-            mainDivEle.appendChild(newInputDiv);
-            mainDivEle.appendChild(newLablDiv);
-
-            formEle.appendChild(mainDivEle);
-            toggleConvertButton(1);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    document.querySelector('#checkboxLi').onclick = function() {
-        try {
-            mainDivEle = createNewDiv('check', 'Checkbox', 1);
-
-            var newLabelDiv = createNewDiv('check', 'Checkbox', 0);
-            newLabelDiv.setAttribute('class', 'align-div-10 margin-top-5');
-            var newLabel = document.createElement("label");
-            var newLabelText = document.createTextNode('Checkbox');
-            newLabel.appendChild(newLabelText);
-            newLabelDiv.appendChild(newLabel);
-
-            var newInputDiv = createNewDiv('check', 'Checkbox', 0);
-            newInputDiv.setAttribute('class', 'align-div-25');
-            var inpEle = document.createElement("input");
-            inpEle.type = "checkbox";
-            newInputDiv.appendChild(inpEle);
-
-            var newLablDiv = createNewDiv('check', 'Checkbox', 0);
-            newLablDiv.setAttribute('class', 'align-div-65 margin-top-5');
-            generateEditAndRemoveIcon(newLablDiv);
-
-            mainDivEle.appendChild(newLabelDiv);
-            mainDivEle.appendChild(newInputDiv);
-            mainDivEle.appendChild(newLablDiv);
-
-            formEle.appendChild(mainDivEle);
-            toggleConvertButton(1);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    document.querySelector('#radioLi').onclick = function() {
-        try {
-            mainDivEle = createNewDiv('rad', 'Radio', 1);
-
-            var newLabelDiv = createNewDiv('rad', 'Radio', 0);
-            newLabelDiv.setAttribute('class', 'align-div-10 margin-top-5');
-            var newLabel = document.createElement("label");
-            var newLabelText = document.createTextNode('Radio');
-            newLabel.appendChild(newLabelText);
-            newLabelDiv.appendChild(newLabel);
-
-            var newInputDiv = createNewDiv('rad', 'Radio', 0);
-            newInputDiv.setAttribute('class', 'align-div-25');
-            var radOneEle = addRadioButton('yes', 'Yes');
-            var radTwoEle = addRadioButton('no', 'No');
-            newInputDiv.appendChild(radOneEle);
-            newInputDiv.appendChild(radTwoEle);
-
-            var newLablDiv = createNewDiv('rad', 'Radio', 0);
-            newLablDiv.setAttribute('class', 'align-div-65 margin-top-5');
-            generateEditAndRemoveIcon(newLablDiv);
-
-            mainDivEle.appendChild(newLabelDiv);
-            mainDivEle.appendChild(newInputDiv);
-            mainDivEle.appendChild(newLablDiv);
-
-            formEle.appendChild(mainDivEle);
-            toggleConvertButton(1);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-
-    span.onclick = function() {
-        try {
-            modal.style.display = "none";
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    window.onclick = function(event) {
-        try {
-            if (event.target.className == 'form-content' || event.target.className == 'form-left-side-bar') {
-                modal.style.display = "none";
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    function createNewDiv(idTxt, labelName, setDivClass) {
-        try {
-            var newDivEle = document.createElement("div");
-            if (setDivClass === 1) {
-                newDivEle.setAttribute('class', 'main-div-align');
-            }
-            return newDivEle;
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    function addSelectOption(selectElement, aOption) {
-        try {
-            while (selectElement.hasChildNodes()) {
-                selectElement.removeChild(selectElement.lastChild);
-            }
-            for (var i = 0; i < aOption.length; i++) {
-                var option = document.createElement("option");
-                option.value = aOption[i];
-                option.text = aOption[i];
-                selectElement.appendChild(option);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    function addRadioButton(value, text) {
-        try {
-            var radio = document.createElement("input");
-            radio.type = "radio";
-            radio.name = "radio";
-            radio.value = value;
-
-            var label = document.createElement("label");
-            label.appendChild(radio);
-            label.appendChild(document.createTextNode(text));
-            return label;
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    function generateEditAndRemoveIcon(element) {
-        try {
-            var iEdit = document.createElement("i");
-            iEdit.setAttribute('class', 'fa fa-pencil-square-o');
-            iEdit.setAttribute('onclick', 'editRow(event);');
-
-            var iDel = document.createElement("i");
-            iDel.setAttribute('class', 'fa fa-times');
-            iDel.setAttribute('onclick', 'delRow(event);');
-
-            element.appendChild(iEdit);
-            element.appendChild(iDel);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    function editRow(evt) {
-        try {
-            while (modalBodyDiv.hasChildNodes()) {
-                modalBodyDiv.removeChild(modalBodyDiv.lastChild);
-            }
-            var eventOrigin = evt.target;
-            eventOrigin.setAttribute('data-ref', 'current');
-
-            var eleType = eventOrigin.parentNode.previousSibling.firstChild.type;
-            if (typeof eleType === 'undefined') {
-                eleType = 'radio';
-            }
-
-            var aModalLabelTxt = ['Label', 'Class', 'ID', 'Name'];
-            var aModalInputId = ['lb', 'cl', 'id', 'na'];
-            if (eleType === 'text' || eleType === 'textarea') {
-                aModalLabelTxt.push('Placeholder');
-                aModalInputId.push('pl');
-            }
-            if (eleType === 'select-one') {
-                aModalLabelTxt.push('Options');
-                aModalInputId.push('op');
-            }
-            if (eleType === 'radio') {
-                aModalLabelTxt = ['Label', 'ID 1', 'ID 2', 'Class 1', 'Class 2', 'Option 1', 'Option 2', 'Name 1', 'Name 2'];
-                aModalInputId = ['lb', 'id1', 'id2', 'cl1', 'cl2', 'op1', 'op2', 'na1', 'na2'];
-            }
-            for (var i = 0; i < aModalInputId.length; i++) {
-                var modalMainDiv = document.createElement('div');
-                modalMainDiv.setAttribute('class', 'mod-main-div');
-                var modalLabelDiv = document.createElement('div');
-                modalLabelDiv.setAttribute('class', 'mod-div-15');
-                var modalLabel = document.createElement('label');
-                modalLabel.appendChild(document.createTextNode(aModalLabelTxt[i]));
-                modalLabelDiv.appendChild(modalLabel);
-
-                var modalInputDiv = document.createElement('div');
-                modalInputDiv.setAttribute('class', 'mod-div-85');
-                var modalInput = document.createElement('input');
-                modalInput.className = "input-text-modal";
-                modalInput.type = "text";
-                modalInput.id = aModalInputId[i];
-                modalInputDiv.appendChild(modalInput);
-
-                modalMainDiv.appendChild(modalLabelDiv);
-                modalMainDiv.appendChild(modalInputDiv);
-                modalBodyDiv.appendChild(modalMainDiv);
-            }
-            var changeBtn = document.createElement('button');
-            changeBtn.appendChild(document.createTextNode('Save'));
-            changeBtn.setAttribute('class', 'change-button');
-            changeBtn.setAttribute('onclick', 'changeParameters();');
-            modalBodyDiv.appendChild(changeBtn);
-            modal.style.display = "block";
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-
-    function changeParameters() {
-        try {
-            var editOrigin = document.getElementsByClassName('fa-pencil-square-o');
-            var iOrigin = '';
-            for (var i = 0; i < editOrigin.length; i++) {
-                var dataRef = editOrigin[i].dataset.ref;
-                if (typeof dataRef !== 'undefined' && dataRef === 'current') {
-                    iOrigin = editOrigin[i];
-                    editOrigin[i].dataset.ref = '';
-                    break;
-                }
-            }
-            var destination = iOrigin.parentNode.previousSibling;
-            var destLength = destination.childNodes.length;
-
-            var row = '';
-            var lablRow = '';
-            var radioRow1 = '';
-            var radioRow2 = '';
-
-            if (destLength === 1) {
-                var aModalInputId = ['lb', 'cl', 'id', 'na'];
-                row = destination.childNodes[0];
-                lablRow = iOrigin.parentNode.previousSibling.previousSibling.childNodes[0];
-                if (row.type == 'text' || row.type == 'textarea') {
-                    aModalInputId.push('pl');
-                } else if (row.type == 'select-one') {
-                    aModalInputId.push('op');
-                }
-                for (var j = 0; j < aModalInputId.length; j++) {
-                    var newVal = document.querySelector('#' + aModalInputId[j]);
-                    var newOthVal = newVal.value;
-                    if (newOthVal) {
-                        switch (aModalInputId[j]) {
-                            case 'lb':
-                                while (lablRow.hasChildNodes()) {
-                                    lablRow.removeChild(lablRow.lastChild);
-                                }
-                                lablRow.appendChild(document.createTextNode(newOthVal));
-                                break;
-                            case 'na':
-                                row.name = newOthVal;
-                                break;
-                            case 'cl':
-                                row.className = newOthVal;
-                                break;
-                            case 'id':
-                                row.id = newOthVal;
-                                break;
-                            case 'pl':
-                                row.placeholder = newOthVal;
-                                break;
-                            case 'op':
-                                var aOption = newOthVal.split(',');
-                                addSelectOption(row, aOption);
-                                break;
-                        }
-                    }
-                }
-            } else if (destLength === 2) {
-                var aModalRadId = ['lb', 'id1', 'id2', 'cl1', 'cl2', 'op1', 'op2', 'na1', 'na2'];
-                var radInput1 = destination.childNodes[0].childNodes[0];
-                var radInput2 = destination.childNodes[1].childNodes[0];
-                var radLab1 = destination.childNodes[0].childNodes[1];
-                var radLab2 = destination.childNodes[1].childNodes[1];
-                lablRow = iOrigin.parentNode.previousSibling.previousSibling.childNodes[0];
-                for (var k = 0; k < aModalRadId.length; k++) {
-                    var newRadVal = document.querySelector('#' + aModalRadId[k]);
-                    var newRadValue = newRadVal.value;
-                    if (newRadValue) {
-                        switch (aModalRadId[k]) {
-                            case 'lb':
-                                while (lablRow.hasChildNodes()) {
-                                    lablRow.removeChild(lablRow.lastChild);
-                                }
-                                lablRow.appendChild(document.createTextNode(newRadValue));
-                                break;
-                            case 'na1':
-                                radInput1.name = newRadValue;
-                                break;
-                            case 'na2':
-                                radInput2.name = newRadValue;
-                                break;
-                            case 'cl1':
-                                radInput1.className = newRadValue;
-                                break;
-                            case 'cl2':
-                                radInput2.className = newRadValue;
-                                break;
-                            case 'id1':
-                                radInput1.id = newRadValue;
-                                break;
-                            case 'id2':
-                                radInput2.id = newRadValue;
-                                break;
-                            case 'op1':
-                                radLab1.nodeValue = radInput1.value = newRadValue;
-                                break;
-                            case 'op2':
-                                radLab2.nodeValue = radInput2.value = newRadValue;
-                                break;
-                        }
-                    }
-                }
-            }
-            modal.style.display = "none";
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    function delRow(evt) {
-        try {
-            var mainDivEle = evt.target.parentNode.parentNode;
-            mainDivEle.remove();
-            var myForm = document.querySelector('#newFormBuilder');
-            if (myForm.hasChildNodes() === false) {
-                toggleConvertButton(0);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    function convertHtmlToJson() {
-        try {
-            var myForm = document.querySelector('#newFormBuilder');
-            var aResult = [];
-            for (var i = 0; i < myForm.length; i++) {
-                var result = {};
-                if (myForm[i].type === 'radio') {
-                    result.label = myForm[i].parentNode.parentNode.previousSibling.childNodes[0].innerText;
-                } else {
-                    result.label = myForm[i].parentNode.previousSibling.childNodes[0].innerText;
-                }
-                result.id = myForm[i].id;
-                result.class = myForm[i].className;
-                result.name = myForm[i].name;
-                result.placeholder = myForm[i].placeholder;
-                result.type = myForm[i].type;
-                result.value = myForm[i].value;
-                aResult.push(result);
-            }
-            aResult = JSON.stringify(aResult, null, 4);
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(aResult));
-            element.setAttribute('download', 'form-builder.json');
-            element.style.display = 'none';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
-        } catch (e) {
-            console.log(e.message);
-        }
-    }
-
-    function toggleConvertButton(condition) {
-        try {
-            if (condition == 1) {
-                convertBtn.style.display = 'block';
-            } else {
-                convertBtn.style.display = 'none';
-            }
-        } catch (e) {
-            console.log(e.message);
-        }
-    }
+function mouseAction(condition, index) {
+  getElementById('icon-div-'+index).style.display = condition ? 'inline-block' : 'none';
+}

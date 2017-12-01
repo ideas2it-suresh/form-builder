@@ -1,15 +1,14 @@
-@import 'helpers/_variables.scss';
-
 .form-left-side-bar {
     align-content: center;
     align-items: center;
+    background: linear-gradient($gradient-primary-color, $gradient-secondary-color, $gradient-primary-color);
     background-color: $form-build-primary-color;
-    display: table-cell;
+    display: block;
     font-size: 14px;
     margin:0;
-    width :10%;
+    width :15%;
     ul {
-        margin-top: 50px;
+        margin: 0;
         padding: 0;
     }
     li {
@@ -24,5 +23,11 @@
             right: 25px;
             top: 17px;
         }
+    }
+    .li-head {
+        cursor: unset;
+        font-size: 20px;
+        font-weight: 600;
+        padding: 25px 0 25px 15px;
     }
 }

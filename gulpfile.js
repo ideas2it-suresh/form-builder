@@ -1,6 +1,19 @@
 var gulp = require('gulp');
 var sass = require('gulp-sass');
+var eslint = eslint = require('gulp-eslint');
 var browserSync = require('browser-sync').create();
+
+gulp.task('lint', function () {
+  return gulp.src('app/js/**/*.js')
+    .pipe(eslint({
+	'rules':{
+        'quotes': [1, 'single'],
+        'semi': [1, 'always']
+    }
+    }))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
 
 gulp.task('sass', function() {
     return gulp.src('app/scss/**/*.scss')
